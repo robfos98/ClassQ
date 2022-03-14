@@ -4,22 +4,17 @@ import math
 def GCD(a, b):
     def iterator(a, b):
         if a < b: (a, b) = (b, a)
-        if not b:
-            if a: return a
-            else: raise ZeroDivisionError
+        if not b: return a
         return iterator(a % b, b)
     a = abs(a)
     b = abs(b)
+    if not a and not b: raise ZeroDivisionError
     return iterator(a, b)
 
 class Q:
     def __init__(self, n = 0, d = 1):
-        if isinstance(n, float) or isinstance(d, float):
+        if isinstance(n, (float, Q)) or isinstance(d, (float, Q)):
             ans = Q.sink(n)/Q.sink(d)
-            self.n = ans.n
-            self.d = ans.d
-        elif isinstance(n, Q) or isinstance(d, Q):
-            ans = n/d
             self.n = ans.n
             self.d = ans.d
         else:
@@ -32,6 +27,8 @@ class Q:
             self.n = n // divis
             self.d = d // divis
 
+    def __repr__(self):
+        return str(self.n) + '/' + str(self.d)
     def __str__(self):
         if self.d > 1: return str(self.n) + '/' + str(self.d)
         else: return str(self.n)
@@ -141,7 +138,7 @@ class Q:
     def __ceil__(self):
         return -math.floor(-self)
     def __int__(self):
-        return math.floor(self).n if self > 0 else math.ceil(self).n
+        return math.floor(self).n if self >= 0 else math.ceil(self).n
 
     def SCF(list):
         for num in list: num = int(num)
@@ -167,5 +164,3 @@ class Q:
                 if q <= 1/acc: break
                 q **= -1
             return Q.SCF(ans)
-
-print(Q(3.5))
