@@ -161,6 +161,6 @@ class Q:
             while Q.SCF(ans).d < acc:
                 (count, q) = divmod(q, 1)
                 ans += [Q(int(count))]
-                if q <= 1/acc: break
+                if q * acc <= 1: break
                 q **= -1
             return Q.SCF(ans)
