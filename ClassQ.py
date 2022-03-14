@@ -1,4 +1,5 @@
 from decimal import DivisionByZero
+import math
 
 def GCDstep(a, b):
     if not b: return a, a, 0
@@ -35,7 +36,6 @@ class Q:
     def __str__(self):
         if self.d > 1: return str(self.n) + '/' + str(self.d)
         else: return str(self.n)
-
     def __bool__(self):
         return bool(self.n)
 
@@ -99,7 +99,7 @@ class Q:
     def __ge__(self, q):
         return not self < q
 
-    def floorer(self, q):
+    def __divmod__(self, q):
         if isinstance(q, int): q = Q(q)
         if q == 0: raise ZeroDivisionError
         elif q < 0:
@@ -113,21 +113,22 @@ class Q:
             self -= q
             ans += 1
         return ans, self
-
+    def __rdivmod__(self, q):
+        return divmod(Q(q), self)
     def __floordiv__(self, q):
-        return Q.floorer(self, q)[0]
+        return divmod(self, q)[0]
     def __rfloordiv__(self, q):
-        return Q(q) // self
+        return divmod(Q(q), self)[0]
     def __mod__(self, q):
-        return Q.floorer(self,q)[1]
+        return divmod(self, q)[1]
     def __rmod__(self, q):
-        return Q(q) % self
+        return divmod(Q(q), self)[1]
 
-x = Q(2,3)
-y = Q(1,6)
-print(x // y)
-print(1 // y)
-print(x // 1)
-print(-1 // Q(7))
-print(1 % x)
-print(y % 1)
+    def __floor__(self):
+        return self // 1
+    def __ceil__(self):
+        return -math.floor(-self)
+    def __int__(self):
+        return math.floor(self).n if self > 0 else math.ceil(self).n
+    def __float__(self):
+        return self.n / self.d
