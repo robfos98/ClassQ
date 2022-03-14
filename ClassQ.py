@@ -107,7 +107,7 @@ class Q:
     def __divmod__(self, q):
         if isinstance(q, int): q = Q(q)
         if isinstance(q, float): q = Q.sink(q)
-        if q == 0: raise ZeroDivisionError
+        if not q: raise ZeroDivisionError
         elif q < 0:
             self = -self
             q = -q
@@ -149,18 +149,18 @@ class Q:
             list = list[:-1]
         return ans
 
-    def sink(q, acc = 1000000):
-        if isinstance(q, (int, Q)): return q
-        elif not isinstance(q, float): raise ArithmeticError
-        elif q < 0: return -Q.sink(-q)
-        elif q == 0: return Q()
+    def sink(f, acc = 1000000):
+        if isinstance(f, (int, Q)): return f
+        elif not isinstance(f, float): raise ArithmeticError
+        elif f < 0: return -Q.sink(-f)
+        elif f == 0: return Q()
         else:
-            if q * acc < 100:
-                acc = math.ceil(100/q)
+            if f * acc < 100:
+                acc = math.ceil(100/f)
             ans = []
             while Q.SCF(ans).d < acc:
-                (count, q) = divmod(q, 1)
+                (count, f) = divmod(f, 1)
                 ans += [Q(int(count))]
-                if q * acc <= 1: break
-                q **= -1
+                if f * acc <= 1: break
+                f **= -1
             return Q.SCF(ans)
