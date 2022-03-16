@@ -12,6 +12,20 @@ def GCD(a, b):
     return iterator(a, b)
 
 class Q:
+    def base(n, base=2):
+        if isinstance(n, Q): return Q(Q.base(n.n, base), Q.base(n.d, base))
+        elif isinstance(n, float): return Q.base(Q.sink(n), base)
+        elif not isinstance(n, int): raise ArithmeticError
+        elif not n: return [None]
+        elif n < 0: return [False] + Q.base(-n, base)[1:]
+        elif base == 2: return [True] + [int(digit) for digit in bin(n)[2:]]
+        else:
+            ans = []
+            while n:
+                n, prepend = divmod(n, base)
+                ans = [prepend] + ans
+            return [True] + ans
+
     def __init__(self, n = 0, d = 1):
         if isinstance(n, (float, Q)) or isinstance(d, (float, Q)):
             ans = Q.sink(n)/Q.sink(d)
@@ -58,9 +72,11 @@ class Q:
         elif not q and not self.n: raise ZeroDivisionError
         else:
             ans = Q(1)
+            q = Q.base(q)[1:]
             while q:
-                ans *= self
-                q -= 1
+                ans *= ans
+                if q[0]: ans *= self
+                q = q[1:]
             return ans
     def __rpow__(self, q):
         return Q(q) ** self
@@ -155,8 +171,8 @@ class Q:
         elif f < 0: return -Q.sink(-f)
         elif f == 0: return Q()
         else:
-            if f * acc < 100:
-                acc = math.ceil(100/f)
+            while f * acc < 100:
+                acc *= 10
             ans = []
             while Q.SCF(ans).d < acc:
                 (count, f) = divmod(f, 1)
@@ -164,3 +180,5 @@ class Q:
                 if f * acc <= 1: break
                 f **= -1
             return Q.SCF(ans)
+
+print(Q.sink(29437/58486))
